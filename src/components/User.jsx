@@ -3,10 +3,14 @@ import { Link, Route } from 'react-router-dom';
 import Followers from './Followers.jsx'
 import Following from './Following.jsx'
 import Repos from './Repos.jsx'
+
+import {GithubApiToken} from './Data.jsx'
+
 class User extends React.Component {
     constructor() {
         super();
         this.state = {};
+        console.log(GithubApiToken)
     }
 
     /*
@@ -31,7 +35,7 @@ class User extends React.Component {
     }
 
     fetchyMcGee = () => {
-        fetch(`https://api.github.com/users/${this.props.username}`)
+        fetch(`https://api.github.com/users/${this.props.username}?access_token=${GithubApiToken}`)
             .then(response => response.json())
             .then(
             user => {
@@ -103,9 +107,9 @@ class User extends React.Component {
                         {stats.map(this.renderStat)}
                     </ul>
                 </div>
-                <Route path={`/user/${this.props.username}/followers`} render={() => { return <Followers username={this.props.username} /> }} />
-                <Route path={`/user/${this.props.username}/following`} render={() => { return <Following username={this.props.username} /> }} />
-                <Route path={`/user/${this.props.username}/repos`} render={() => { return <Repos username={this.props.username} /> }} />
+                <Route path={`/user/${this.props.username}/followers`} render={() => { return <Followers username={this.props.username} token={GithubApiToken}/> }} />
+                <Route path={`/user/${this.props.username}/following`} render={() => { return <Following username={this.props.username} token={GithubApiToken}/> }} />
+                <Route path={`/user/${this.props.username}/repos`} render={() => { return <Repos username={this.props.username} token={GithubApiToken}/> }} />
             </div>
         );
     }
