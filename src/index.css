@@ -87,7 +87,10 @@ h1,h2,h3,h4,h5,h6 {
     height: 35px;
     margin-right: 1em;
 }
-
+.loader{
+    background-color: green;
+    transition: width 50ms ease-in;
+}
 .user-info__text {
     text-decoration: none;
     flex: 1;

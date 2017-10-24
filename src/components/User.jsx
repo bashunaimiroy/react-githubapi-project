@@ -7,6 +7,8 @@ class User extends React.Component {
     constructor() {
         super();
         this.state = {};
+        this.apiToken = "e17d3b3493a51ceefd3b416f77f2e3b4c638c1e2"
+
     }
 
     /*
@@ -31,7 +33,7 @@ class User extends React.Component {
     }
 
     fetchyMcGee = () => {
-        fetch(`https://api.github.com/users/${this.props.username}`)
+        fetch(`https://api.github.com/users/${this.props.username}?access_token=${this.apiToken}`)
             .then(response => response.json())
             .then(
             user => {
