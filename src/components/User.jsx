@@ -1,6 +1,8 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-
+import { Link, Route } from 'react-router-dom';
+import Followers from './Followers.jsx'
+import Following from './Following.jsx'
+import Repos from './Repos.jsx'
 class User extends React.Component {
     constructor() {
         super();
@@ -19,10 +21,19 @@ class User extends React.Component {
     the data -- in the callback -- we call `setState` to put the user data in our state. This will trigger a re-render.
     When `render` gets called again, `this.state.user` exists and we get the user info display instead of "LOADING..."
     */
+    componentDidUpdate(prevProps, prevState) {
+        if (prevProps.username !== this.props.username) {
+            this.fetchyMcGee()
+        }
+    }
     componentDidMount() {
+        this.fetchyMcGee();
+    }
+
+    fetchyMcGee = () => {
         fetch(`https://api.github.com/users/${this.props.username}`)
-        .then(response => response.json())
-        .then(
+            .then(response => response.json())
+            .then(
             user => {
                 // How can we use `this` inside a callback without binding it??
                 // Make sure you understand this fundamental difference with arrow functions!!!
@@ -30,7 +41,7 @@ class User extends React.Component {
                     user: user
                 });
             }
-        );
+            );
     }
 
     /*
@@ -48,7 +59,8 @@ class User extends React.Component {
     }
 
     render() {
-        // If the state doesn't have a user key, it means the AJAX didn't complete yet. Simply render a LOADING indicator.
+        // If the state doesn't have a user key, it means the AJAX didn't complete yet. 
+        //Simply render a LOADING indicator.
         if (!this.state.user) {
             return (<div className="user-page">LOADING...</div>);
         }
@@ -78,9 +90,11 @@ class User extends React.Component {
         // Look in index.css for the styles that make this look like it does
         return (
             <div className="user-page">
+
                 <div className="user-info">
+
                     <Link className="user-info__text" to={`/user/${user.login}`}>
-                        <img className="user-info__avatar" src={user.avatar_url} alt={`${user.login} avatar`}/>
+                        <img className="user-info__avatar" src={user.avatar_url} alt={`${user.login} avatar`} />
                         <h2 className="user-info__title">{user.login} ({user.name})</h2>
                         <p className="user-info__bio">{user.bio}</p>
                     </Link>
@@ -89,6 +103,9 @@ class User extends React.Component {
                         {stats.map(this.renderStat)}
                     </ul>
                 </div>
+                <Route path={`/user/${this.props.username}/followers`} render={() => { return <Followers username={this.props.username} /> }} />
+                <Route path={`/user/${this.props.username}/following`} render={() => { return <Following username={this.props.username} /> }} />
+                <Route path={`/user/${this.props.username}/repos`} render={() => { return <Repos username={this.props.username} /> }} />
             </div>
         );
     }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom'
-import { Redirect } from 'react-router-dom'
+// import { Redirect } from 'react-router-dom'
 
 //import { browserHistory as history } from 'react-router';
 
@@ -20,14 +20,18 @@ class Search extends React.Component {
 
 
     handleInputChange = e => {
-        // This needs to be filled in
+        console.log("yo we're updating the state.user")
+        this.setState({user:this.inputter.value})
     }
 
     render() {
         return (
             <div className="search-page">
                 <h2>Enter a GitHub username</h2>
-                <input className="search-page__input" type="text" onChange={this.handleInputChange} />
+                <input 
+                ref={r=>this.inputter=r}className="search-page__input" 
+                type="text"
+                onChange={this.handleInputChange} />
                 <Link to={'/user/' + this.state.user} className="fakeButton"> Search</Link>
             </div>
         );
