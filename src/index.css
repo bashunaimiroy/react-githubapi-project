@@ -91,6 +91,9 @@ h1,h2,h3,h4,h5,h6 {
     background-color: green;
     transition: width 50ms ease-in;
 }
+.little-message{
+    font-size:0.5em
+}
 .user-info__text {
     text-decoration: none;
     flex: 1;

@@ -6,29 +6,40 @@ import GithubUser from "./GithubUser.jsx"
 class Followers extends Component {
     constructor(props) {
         super(props);
-        this.state = { followers: [], page: 1, loading: false }
+        console.log(props)
+        this.state = { followers: [], page: 1, loading: false, endOfResults:false}
         // var setState=this.setState.bind(this)
-        this.apiToken = "e17d3b3493a51ceefd3b416f77f2e3b4c638c1e2"
-        this.loadingProgress = 0;
 
     }
 
     fetcheroonie = () => {
-        this.loading = true;
-        console.log("fetching!")
-        console.log(this.props);
-        this.loadingProgress = 30;
-        fetch(`https://api.github.com/users/${this.props.username}/followers?access_token=${this.apiToken}&page=${this.state.page}&per_page=50`)
-            .then(response => { this.loadingProgress = 60; return response.json() })
+        this.setState({loading:true})
+        console.log("fetching followers from github API!")
+        //makes an HTTP request to the API for user's followers, 
+        //using our api Token and specifying the page we want
+
+        fetch(`https://api.github.com/users/${this.props.username}/followers?access_token=${this.props.token}&page=${this.state.page}&per_page=50`)
+            .then(response => response.json())
             .then(results => {
-                this.loadingProgress = 100;
+                console.log(results);
+                //checks if we're getting an empty array back, tells <infinite> to stop beating a dead horse by
+            //setting this.state.endOfResults to true
+                if(results.length===0
+                    || !Array.isArray(results)
+                ){
+                    console.log("it's the end of results as we know it!")
+                    this.setState({endOfResults:true})}
+                else{                
+                    console.log("more results from GitHub!")
+                    //but if we're still getting results, concatenate them to the state array,
+                //flip the page for the next request we make,
+                //and tell <infinite> to turn off that loading spinner cause we've got results.
                 this.setState(
                     st => ({
                         followers: st.followers.concat(results),
                         page: st.page + 1,
                         loading: false
-                    })
-                    , () => { this.loadingProgress = 0; })
+                    }))}
             });
     }
 
@@ -40,17 +51,22 @@ class Followers extends Component {
                 <Infinite
                     isInfiniteLoading={this.state.loading}
                     onInfiniteLoad={this.fetcheroonie}
-                    infiniteLoadBeginEdgeOffset={100}
-                    useWindowAsScrollContainer elementHeight={39}
+                    infiniteLoadBeginEdgeOffset={
+                        //if we're at the end of results, stop beating a dead horse,
+                        //sets infiniteLoadBeginEdgeOffset to undefined which effectively
+                        //turns off infinite scroll. Otherwise it's 100 pixels above the bottom.
+                        this.state.endOfResults? undefined:100
+                    }
+                    useWindowAsScrollContainer 
+                    elementHeight={39}
                     loadingSpinnerDelegate=
-                    {<div style={{ width: 500 + "px", height: 20 + "px" }}>
-                        <div className="loader"
-                            style={{ width: this.loadingProgress + "%", height: 100 + "%" }}>
-                        </div>
+                    {<div className="little-message">loading Followers...
                     </div>}
                 >
                     {this.state.followers.map((user) => <GithubUser user={user} key={user.login} />)}
                 </Infinite>
+                {this.state.endOfResults? <div className="little-message">end of results</div>:<div></div>}
+
             </div>)
     }
 }
